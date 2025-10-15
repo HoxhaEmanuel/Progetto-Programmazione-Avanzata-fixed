@@ -1,0 +1,779 @@
+{
+  "info": {
+    "name": "Crown-Sourcing API Tests",
+    "description": "Collezione completa per testare tutte le API del Crown-Sourcing Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "userToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "modelId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "modelId2",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "requestId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user2Token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. AUTENTICAZIONE",
+      "item": [
+        {
+          "name": "1.1 Registrazione Utente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@test.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "1.2 Registrazione Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"admin123\",\n  \"ruolo\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "1.3 Login Utente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('userToken', response.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@test.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "1.4 Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('adminToken', response.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. GESTIONE MODELLI",
+      "item": [
+        {
+          "name": "2.1 Crea Primo Modello",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('modelId', response.modello.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Labirinto Test 1\",\n  \"griglia\": [\n    [0, 0, 1, 0],\n    [1, 0, 1, 0],\n    [0, 0, 0, 0],\n    [0, 1, 1, 0]\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/models",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models"]
+            }
+          }
+        },
+        {
+          "name": "2.2 Lista Modelli Utente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/models?pagina=1&limite=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models"],
+              "query": [
+                {
+                  "key": "pagina",
+                  "value": "1"
+                },
+                {
+                  "key": "limite",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.3 Stato Modello",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/models/{{modelId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models", "{{modelId}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "2.4 Esegui A* - Formato Separato",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startX\": 0,\n  \"startY\": 0,\n  \"goalX\": 3,\n  \"goalY\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/models/{{modelId}}/execute",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models", "{{modelId}}", "execute"]
+            }
+          }
+        },
+        {
+          "name": "2.5 Esegui A* - Formato Oggetto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"start\": { \"x\": 0, \"y\": 0 },\n  \"goal\": { \"x\": 3, \"y\": 2 }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/models/{{modelId}}/execute",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models", "{{modelId}}", "execute"]
+            }
+          }
+        },
+        {
+          "name": "2.6 Crea Secondo Modello",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('modelId2', response.modello.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Modello Collaborativo\",\n  \"griglia\": [\n    [0, 1, 0],\n    [0, 1, 0],\n    [0, 0, 0]\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/models",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. SISTEMA COLLABORATIVO",
+      "item": [
+        {
+          "name": "3.1 Test Modifica Diretta (Creatore)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"celle\": [\n    { \"x\": 1, \"y\": 1, \"nuovo_valore\": 0 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/updates/models/{{modelId}}/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "updates", "models", "{{modelId}}", "request"]
+            }
+          }
+        },
+        {
+          "name": "3.2 Registrazione Secondo Utente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user2@test.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "3.3 Login Secondo Utente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('user2Token', response.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user2@test.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "3.4 Richiesta da Utente Esterno",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('requestId', response.richiesta_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user2Token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"celle\": [\n    { \"x\": 2, \"y\": 1, \"nuovo_valore\": 1 },\n    { \"x\": 0, \"y\": 2, \"nuovo_valore\": 0 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/updates/models/{{modelId}}/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "updates", "models", "{{modelId}}", "request"]
+            }
+          }
+        },
+        {
+          "name": "3.5 Lista Richieste Pending (Creatore)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/updates/pending?pagina=1&limite=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "updates", "pending"],
+              "query": [
+                {
+                  "key": "pagina",
+                  "value": "1"
+                },
+                {
+                  "key": "limite",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.6 Storico Aggiornamenti",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/updates/models/{{modelId}}/history?pagina=1&limite=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "updates", "models", "{{modelId}}", "history"],
+              "query": [
+                {
+                  "key": "pagina",
+                  "value": "1"
+                },
+                {
+                  "key": "limite",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.7 Approva Richiesta (Bulk)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"richieste\": [\n    {\"id\": {{requestId}}, \"azione\": \"approve\"}\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/updates/approve-reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "updates", "approve-reject"]
+            }
+          }
+        },
+        {
+          "name": "3.7b Approva Tutte le Richieste (Esempio Bulk)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"richieste\": [\n    {\"id\": 2, \"azione\": \"approve\"},\n    {\"id\": 3, \"azione\": \"approve\"},\n    {\"id\": 4, \"azione\": \"approve\"},\n    {\"id\": 5, \"azione\": \"approve\"},\n    {\"id\": 6, \"azione\": \"approve\"}\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/updates/approve-reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "updates", "approve-reject"]
+            }
+          }
+        },
+        {
+          "name": "3.8 Verifica Stato Post-Approvazione",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/models/{{modelId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models", "{{modelId}}", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. AMMINISTRAZIONE",
+      "item": [
+        {
+          "name": "4.1 Statistiche Sistema",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "stats"]
+            }
+          }
+        },
+        {
+          "name": "4.2 Lista Tutti gli Utenti",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users?pagina=1&limite=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"],
+              "query": [
+                {
+                  "key": "pagina",
+                  "value": "1"
+                },
+                {
+                  "key": "limite",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.3 Ricarica Token Utente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@test.com\",\n  \"nuovoSaldo\": 50.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/recharge",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "recharge"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. TEST DI ERRORE",
+      "item": [
+        {
+          "name": "5.1 Token Insufficienti",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Modello Costoso\",\n  \"griglia\": [\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/models",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models"]
+            }
+          }
+        },
+        {
+          "name": "5.2 Accesso Non Autorizzato",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/models",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models"]
+            }
+          }
+        },
+        {
+          "name": "5.3 Admin con Token Utente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "stats"]
+            }
+          }
+        },
+        {
+          "name": "5.4 Modello Inesistente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/models/99999/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models", "99999", "status"]
+            }
+          }
+        },
+        {
+          "name": "5.5 Coordinate A* Non Valide",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startX\": -1,\n  \"startY\": 0,\n  \"goalX\": 10,\n  \"goalY\": 10\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/models/{{modelId}}/execute",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models", "{{modelId}}", "execute"]
+            }
+          }
+        },
+        {
+          "name": "5.6 Griglia Non Valida",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Griglia Invalida\",\n  \"griglia\": [\n    [0, 1, 2],\n    [0, 1]\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/models",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "models"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
