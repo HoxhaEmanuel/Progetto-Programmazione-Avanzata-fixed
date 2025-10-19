@@ -256,10 +256,10 @@ classDiagram
     CellaAggiornamento ..|> CellaAggiornamentoAttributes
     
     %% === ASSOCIATIONS ===
-    Utente ||--o{ Modello : "crea"
-    Utente ||--o{ RichiestaAggiornamento : "richiede"
-    Modello ||--o{ RichiestaAggiornamento : "riceve"
-    RichiestaAggiornamento ||--o{ CellaAggiornamento : "contiene"
+    Utente --> Modello : crea
+    Utente --> RichiestaAggiornamento : richiede
+    Modello --> RichiestaAggiornamento : riceve
+    RichiestaAggiornamento --> CellaAggiornamento : contiene
 ```
 
 ### 🏗️ Diagramma delle Classi - Layer DAO
@@ -268,43 +268,43 @@ classDiagram
 classDiagram
     %% === DAO CLASSES ===
     class UtenteDao {
-        +findById(id: number) Promise~Utente | null~
-        +findByEmail(email: string) Promise~Utente | null~
-        +create(userData: Optional<UtenteAttributes,'id'>) Promise~Utente~
-        +updateTokens(userId: number, newTokenAmount: number) Promise~[number]~
-        +findAllWithPagination(limit: number, offset: number) Promise~{ count: number; rows: Utente[] }~
-        +deductTokensAndGetBalance(userId: number, amount: number) Promise~number~
-        +getTotalTokensInSystem() Promise~number~
-        +count() Promise~number~
+        +findById(id: number) Promise
+        +findByEmail(email: string) Promise
+        +create(userData: Optional<UtenteAttributes,'id'>) Promise
+        +updateTokens(userId: number, newTokenAmount: number) Promise
+        +findAllWithPagination(limit: number, offset: number) Promise
+        +deductTokensAndGetBalance(userId: number, amount: number) Promise
+        +getTotalTokensInSystem() Promise
+        +count() Promise
     }
     
     class ModelloDao {
-        +findById(id: number) Promise~Modello | null~
-        +create(modelData: Optional<ModelloAttributes,'id'>) Promise~Modello~
-        +update(modelId: number, updateData: Partial<ModelloAttributes>) Promise~[number]~
-        +updateGrid(modelId: number, newGrid: number[][]) Promise~[number]~
-        +findByCreatorIdPaginated(creatorId: number, limit: number, offset: number) Promise~{ rows: Modello[]; count: number }~
-        +count() Promise~number~
-        +getModelStatusInfo(modelId: number) Promise~{ modello: Modello; pendingRequests: number } | null~
-        +isCreator(modelId: number, userId: number) Promise~boolean~
-        +findMultipleByIds(modelIds: number[]) Promise~Modello[]~
-        +checkMultipleOwnership(modelIds: number[], userId: number) Promise~Map<number, boolean>~
-        +getGrid(modelId: number) Promise~number[][] | null~
+        +findById(id: number) Promise
+        +create(modelData: Optional<ModelloAttributes,'id'>) Promise
+        +update(modelId: number, updateData: Partial<ModelloAttributes>) Promise
+        +updateGrid(modelId: number, newGrid: number[][]) Promise
+        +findByCreatorIdPaginated(creatorId: number, limit: number, offset: number) Promise
+        +count() Promise
+        +getModelStatusInfo(modelId: number) Promise
+        +isCreator(modelId: number, userId: number) Promise
+        +findMultipleByIds(modelIds: number[]) Promise
+        +checkMultipleOwnership(modelIds: number[], userId: number) Promise
+        +getGrid(modelId: number) Promise
     }
     
     class RichiestaAggiornamentoDao {
-        +findById(id: number, transaction?: Transaction) Promise~RichiestaAggiornamento | null~
-        +create(requestData: Optional<RichiestaAggiornamentoAttributes,'id'>, transaction?: Transaction) Promise~RichiestaAggiornamento~
-        +update(requestId: number, updateData: Partial<RichiestaAggiornamentoAttributes>, transaction?: Transaction) Promise~[number]~
-        +findMultipleByIdsWithRelations(ids: number[], transaction?: Transaction) Promise~RichiestaAggiornamento[]~
-        +findPendingByCreatorIdPaginated(creatorId: number, limit: number, offset: number) Promise~{ rows: RichiestaAggiornamento[]; count: number }~
-        +findByModelIdWithFiltersPaginated(modelId: number, filters: UpdateFilters, limit: number, offset: number) Promise~{ rows: RichiestaAggiornamento[]; count: number }~
-        +getStats() Promise~{ pending: number; approved: number; rejected: number; total: number }~
-        +bulkUpdateStatus(updates: Array<{ requestId: number; status: 'approved' | 'rejected' }>, transaction?: Transaction) Promise~void~
+        +findById(id: number, transaction?: Transaction) Promise
+        +create(requestData: Optional<RichiestaAggiornamentoAttributes,'id'>, transaction?: Transaction) Promise
+        +update(requestId: number, updateData: Partial<RichiestaAggiornamentoAttributes>, transaction?: Transaction) Promise
+        +findMultipleByIdsWithRelations(ids: number[], transaction?: Transaction) Promise
+        +findPendingByCreatorIdPaginated(creatorId: number, limit: number, offset: number) Promise
+        +findByModelIdWithFiltersPaginated(modelId: number, filters: UpdateFilters, limit: number, offset: number) Promise
+        +getStats() Promise
+        +bulkUpdateStatus(updates: Array<{ requestId: number; status: 'approved' | 'rejected' }>, transaction?: Transaction) Promise
     }
 
     class CellaAggiornamentoDao {
-        +bulkCreate(cellsData: Optional<CellaAggiornamentoAttributes,'id'>[], transaction?: Transaction) Promise~CellaAggiornamento[]~
+        +bulkCreate(cellsData: Optional<CellaAggiornamentoAttributes,'id'>[], transaction?: Transaction) Promise
     }
     
     %% === INTERFACES ===
@@ -321,21 +321,21 @@ classDiagram
     }
     
     %% === DEPENDENCIES ===
-    UtenteDao --> Utente : "manages"
-    ModelloDao --> Modello : "manages"
-    RichiestaAggiornamentoDao --> RichiestaAggiornamento : "manages"
-    RichiestaAggiornamentoDao --> Modello : "includes"
-    RichiestaAggiornamentoDao --> CellaAggiornamento : "includes"
-    CellaAggiornamentoDao --> CellaAggiornamento : "manages"
+    UtenteDao --> Utente : manages
+    ModelloDao --> Modello : manages
+    RichiestaAggiornamentoDao --> RichiestaAggiornamento : manages
+    RichiestaAggiornamentoDao --> Modello : includes
+    RichiestaAggiornamentoDao --> CellaAggiornamento : includes
+    CellaAggiornamentoDao --> CellaAggiornamento : manages
     
-    UtenteDao ..> TotalTokensResult : "returns"
-    RichiestaAggiornamentoDao ..> UpdateFilters : "uses"
+    UtenteDao ..> TotalTokensResult : returns
+    RichiestaAggiornamentoDao ..> UpdateFilters : uses
     
     %% === DATABASE CONNECTION ===
-    UtenteDao --> Database : "uses"
-    ModelloDao --> Database : "uses"
-    RichiestaAggiornamentoDao --> Database : "uses"
-    CellaAggiornamentoDao --> Database : "uses"
+    UtenteDao --> Database : uses
+    ModelloDao --> Database : uses
+    RichiestaAggiornamentoDao --> Database : uses
+    CellaAggiornamentoDao --> Database : uses
 ```
 
 ### 🏗️ Diagramma delle Classi - Controllers e Middleware
@@ -671,78 +671,78 @@ sequenceDiagram
     
     Note over U1,DB: Fase 1: Richiesta Aggiornamento
     
-    U1->>+API: POST /api/updates/models/:id/request
+    U1->>API: POST /api/updates/models/:id/request
     Note right of U1: {celle: [{x,y,nuovo_valore}]}
-    API->>+UC: requestCellUpdate()
+    API->>UC: requestCellUpdate()
     alt utente è creatore
-        UC->>+MDAO: getGrid(modelId)
-        MDAO->>+DB: SELECT griglia
-        DB-->>-MDAO: griglia attuale
-        UC->>+MDAO: updateGrid(modelId, nuovaGriglia)
-        MDAO->>+DB: UPDATE griglia
-        DB-->>-MDAO: griglia aggiornata
-        UC-->>-API: {messaggio, costo_token: 0, token_rimanenti}
-        API-->>-U1: 200 OK
+        UC->>MDAO: getGrid(modelId)
+        MDAO->>DB: SELECT griglia
+        DB-->>MDAO: griglia attuale
+        UC->>MDAO: updateGrid(modelId, nuovaGriglia)
+        MDAO->>DB: UPDATE griglia
+        DB-->>MDAO: griglia aggiornata
+        UC-->>API: {messaggio, costo_token: 0, token_rimanenti}
+        API-->>U1: 200 OK
     else utente non è creatore
-        UC->>+UDAO: deductTokensAndGetBalance()
-        UDAO->>+DB: UPDATE token_rimanenti
-        DB-->>-UDAO: nuovo saldo
-        UDAO-->>-UC: saldo aggiornato
-        UC->>+RDAO: create(richiestaData)
-        RDAO->>+DB: INSERT richiesta_aggiornamento
-        DB-->>-RDAO: richiesta creata
-        RDAO-->>-UC: nuova richiesta
-        UC->>+CDAO: bulkCreate(celleData filtrate)
-        CDAO->>+DB: INSERT celle_aggiornamento
-        DB-->>-CDAO: celle create
-        CDAO-->>-UC: celle salvate
-        UC-->>-API: {richiesta_id, costo_totale, token_rimanenti}
-        API-->>-U1: 201 Created
+        UC->>UDAO: deductTokensAndGetBalance()
+        UDAO->>DB: UPDATE token_rimanenti
+        DB-->>UDAO: nuovo saldo
+        UDAO-->>UC: saldo aggiornato
+        UC->>RDAO: create(richiestaData)
+        RDAO->>DB: INSERT richiesta_aggiornamento
+        DB-->>RDAO: richiesta creata
+        RDAO-->>UC: nuova richiesta
+        UC->>CDAO: bulkCreate(celleData filtrate)
+        CDAO->>DB: INSERT celle_aggiornamento
+        DB-->>CDAO: celle create
+        CDAO-->>UC: celle salvate
+        UC-->>API: {richiesta_id, costo_totale, token_rimanenti}
+        API-->>U1: 201 Created
     end
     
     Note over U1,DB: Fase 2: Visualizzazione Richieste
     
-    U2->>+API: GET /api/updates/pending
-    API->>+UC: getPendingRequests()
-    UC->>+RDAO: findPendingByCreatorIdPaginated()
-    RDAO->>+DB: SELECT richieste WHERE stato='pending'
-    DB-->>-RDAO: richieste pending
-    RDAO-->>-UC: lista richieste
-    UC-->>-API: {richieste, paginazione}
-    API-->>-U2: 200 OK
+    U2->>API: GET /api/updates/pending
+    API->>UC: getPendingRequests()
+    UC->>RDAO: findPendingByCreatorIdPaginated()
+    RDAO->>DB: SELECT richieste WHERE stato='pending'
+    DB-->>RDAO: richieste pending
+    RDAO-->>UC: lista richieste
+    UC-->>API: {richieste, paginazione}
+    API-->>U2: 200 OK
     
     Note over U1,DB: Fase 3: Approvazione/Rifiuto (Bulk Operations)
     
-    U2->>+API: PUT /api/updates/approve-reject
+    U2->>API: PUT /api/updates/approve-reject
     Note right of U2: {richieste: [{id, azione}]}
-    API->>+UC: approveRejectRequests()
+    API->>UC: approveRejectRequests()
     
-    UC->>+RDAO: findMultipleByIdsWithRelations()
-    RDAO->>+DB: SELECT richieste con relazioni
-    DB-->>-RDAO: richieste con dati
-    RDAO-->>-UC: richieste complete
+    UC->>RDAO: findMultipleByIdsWithRelations()
+    RDAO->>DB: SELECT richieste con relazioni
+    DB-->>RDAO: richieste con dati
+    RDAO-->>UC: richieste complete
     
-    UC->>+MDAO: checkMultipleOwnership()
-    MDAO->>+DB: SELECT modelli per ownership
-    DB-->>-MDAO: dati ownership
-    MDAO-->>-UC: mappa ownership
+    UC->>MDAO: checkMultipleOwnership()
+    MDAO->>DB: SELECT modelli per ownership
+    DB-->>MDAO: dati ownership
+    MDAO-->>UC: mappa ownership
     
     Note over UC: Raggruppa approvazioni e rifiuti
     
     alt ha approvazioni
-        UC->>+MDAO: updateGrid() per ogni modello
-        MDAO->>+DB: UPDATE griglia modelli
-        DB-->>-MDAO: griglie aggiornate
-        MDAO-->>-UC: aggiornamenti completati
+        UC->>MDAO: updateGrid() per ogni modello
+        MDAO->>DB: UPDATE griglia modelli
+        DB-->>MDAO: griglie aggiornate
+        MDAO-->>UC: aggiornamenti completati
     end
     
-    UC->>+RDAO: bulkUpdateStatus()
-    RDAO->>+DB: UPDATE stati in bulk
-    DB-->>-RDAO: stati aggiornati
-    RDAO-->>-UC: bulk update completato
+    UC->>RDAO: bulkUpdateStatus()
+    RDAO->>DB: UPDATE stati in bulk
+    DB-->>RDAO: stati aggiornati
+    RDAO-->>UC: bulk update completato
     
-    UC-->>-API: {richieste_elaborate}
-    API-->>-U2: 200 OK
+    UC-->>API: {richieste_elaborate}
+    API-->>U2: 200 OK
 ```
 
 ---
@@ -944,49 +944,38 @@ GRANT ALL PRIVILEGES ON DATABASE crowdsourcing_db TO crown_user;
 #### **Inizializzazione Schema**
 
 ```bash
-# Sincronizza schema database
-npm run db:sync
+# Sincronizzazione schema
+# L'app sincronizza automaticamente i modelli all'avvio (Sequelize sync({ alter: true }))
+# Non è necessario eseguire comandi manuali di sync
 
 # Popola con dati di esempio (opzionale)
 npm run db:seed
-
-# Reset completo database (ATTENZIONE: cancella tutti i dati)
-npm run db:reset
 ```
+
+Nota: Nei test di integrazione lo schema viene inizializzato da `db/init.sql` tramite `tests/initTestSchema.js`.
 
 ### 🚀 Comandi Disponibili
 
 ```bash
 # 🔧 Sviluppo
-npm run dev          # Avvia in modalità sviluppo con hot-reload
-npm run dev:debug    # Avvia con debugger abilitato
-npm run build        # Compila TypeScript
-npm run start        # Avvia in modalità produzione
-
-# 🗄️ Database
-npm run db:setup     # Setup completo database
-npm run db:sync      # Sincronizza schema
-npm run db:seed      # Popola dati esempio
-npm run db:reset     # Reset completo
-npm run db:backup    # Backup database
+npm run dev           # Avvia in modalità sviluppo
+npm run build         # Compila TypeScript
+npm run start         # Avvia in modalità produzione
 
 # 🧪 Testing
-npm run test         # Esegui tutti i test
-npm run test:unit    # Test unitari
-npm run test:integration # Test integrazione
-npm run test:coverage    # Coverage report
+npm test              # Esegue i test di integrazione
+npm run test:watch    # Esegue i test in watch mode
+npm run test:coverage # Genera il report di coverage
 
-# 📊 Qualità Codice
-npm run lint         # Linting ESLint
-npm run lint:fix     # Fix automatico
-npm run format       # Formattazione Prettier
-npm run type-check   # Controllo TypeScript
+# 🗄️ Database
+npm run db:seed       # Popola il database con dati di esempio
 
 # 🐳 Docker
-npm run docker:build # Build immagine Docker
-npm run docker:up    # Avvia con Docker Compose
-npm run docker:down  # Ferma servizi Docker
-npm run docker:logs  # Visualizza logs
+npm run docker:build  # Build immagine Docker
+npm run docker:up     # Avvia con Docker Compose
+npm run docker:down   # Ferma servizi Docker
+npm run docker:logs   # Visualizza logs
+npm run docker:restart # Riavvia il servizio backend
 ```
 
 ### 🔍 Verifica Installazione
@@ -1449,139 +1438,84 @@ Authorization: Bearer <admin_token>
 
 ### 🎯 **Strategia di Testing**
 
-Il progetto implementa una strategia di testing completa su più livelli:
+Attualmente sono implementati test di integrazione sull’API con Jest e Supertest.
 
 ```mermaid
 graph TD
-    A[🧪 Testing Strategy] --> B[Unit Tests]
-    A --> C[Integration Tests]
-    A --> D[E2E Tests]
-    A --> E[Performance Tests]
-    
-    B --> B1[Controllers]
-    B --> B2[Services]
-    B --> B3[Utils]
-    B --> B4[Validators]
-    
-    C --> C1[Database]
+    A[🧪 Testing] --> C[Integration Tests]
+    C --> C1[Database Schema (init.sql)]
     C --> C2[API Endpoints]
-    C --> C3[Authentication]
-    
-    D --> D1[User Flows]
-    D --> D2[Admin Flows]
-    D --> D3[A* Algorithm]
-    
-    E --> E1[Load Testing]
-    E --> E2[Stress Testing]
-    E --> E3[Memory Usage]
+    C --> C3[Authentication & Tokens]
 ```
 
-### 🔬 **Test Unitari**
+### 🔬 **Struttura dei Test**
 
-```bash
-# Esegui tutti i test unitari
-npm run test:unit
+La cartella `tests` contiene i test di integrazione per l'applicazione, scritti in JavaScript utilizzando Jest. La struttura attuale è la seguente:
 
-# Test con coverage
-npm run test:coverage
-
-# Test in modalità watch
-npm run test:watch
-
-# Test specifici
-npm run test -- --grep "AuthController"
-```
-
-**Struttura Test**:
 ```
 tests/
-├── unit/
-│   ├── controllers/
-│   │   ├── authController.test.ts
-│   │   ├── modelController.test.ts
-│   │   ├── adminController.test.ts
-│   │   └── updateController.test.ts
-│   ├── services/
-│   │   ├── astarService.test.ts
-│   │   └── tokenService.test.ts
-│   ├── utils/
-│   │   ├── coordinateValidator.test.ts
-│   │   └── errorFactory.test.ts
-│   └── middleware/
-│       ├── authMiddleware.test.ts
-│       └── validationMiddleware.test.ts
-├── integration/
-│   ├── api/
-│   │   ├── auth.integration.test.ts
-│   │   ├── models.integration.test.ts
-│   │   └── updates.integration.test.ts
-│   └── database/
-│       ├── dao.integration.test.ts
-│       └── transactions.integration.test.ts
-├── e2e/
-│   ├── userJourney.e2e.test.ts
-│   ├── adminJourney.e2e.test.ts
-│   └── collaborativeFlow.e2e.test.ts
-└── performance/
-    ├── astar.performance.test.ts
-    └── api.load.test.ts
+├── admin.test.js
+├── auth.test.js
+├── createTestDb.js
+├── initTestSchema.js
+├── jest.env.js
+├── models.test.js
+├── setup.js
+└── updates.test.js
 ```
 
 ### 🔗 **Test di Integrazione**
 
 ```bash
-# Setup database di test
-npm run test:db:setup
+# Esegui tutti i test di integrazione
+npm test
 
-# Esegui test integrazione
-npm run test:integration
-
-# Cleanup dopo test
-npm run test:db:cleanup
+# Report di coverage
+npm run test:coverage
 ```
 
+Nota: Il setup del DB di test e l’inizializzazione dello schema sono automatici (vedi `tests/createTestDb.js` e `tests/initTestSchema.js`).
+
 **Esempio Test API**:
-```typescript
-describe('Model API Integration', () => {
-  beforeEach(async () => {
-    await setupTestDatabase();
-    await seedTestData();
+```javascript
+const { Utente, Modello } = require('../src/models');
+
+describe('Models API', () => {
+  let authToken;
+  let userId;
+
+  beforeAll(async () => {
+    // Registrazione e login
+    await global.request
+      .post('/api/auth/register')
+      .send({ email: 'modeltest@example.com', password: 'password123' });
+
+    const loginResponse = await global.request
+      .post('/api/auth/login')
+      .send({ email: 'modeltest@example.com', password: 'password123' });
+
+    authToken = loginResponse.body.token;
+    userId = loginResponse.body.user.id;
   });
 
-  it('should create model and execute A* algorithm', async () => {
-    // Registrazione utente
-    const registerResponse = await request(app)
-      .post('/api/auth/register')
-      .send({
-        email: 'test@example.com',
-        password: 'password123',
-        ruolo: 'user'
-      });
-    
-    const { token } = registerResponse.body;
-    
-    // Creazione modello
-    const modelResponse = await request(app)
+  it('crea un modello ed esegue A*', async () => {
+    const createRes = await global.request
       .post('/api/models')
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        nome: 'Test Grid',
-        griglia: [[0, 1], [0, 0]]
-      });
-    
-    expect(modelResponse.status).toBe(201);
-    
-    // Esecuzione A*
-    const executeResponse = await request(app)
-      .post(`/api/models/${modelResponse.body.modello.id}/execute`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        startX: 0, startY: 0,
-        goalX: 1, goalY: 1
-      });
-    
-    expect(executeResponse.status).toBe(200);
-    expect(executeResponse.body.percorso).toBeDefined();
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({ nome: 'Test Model', griglia: [[0, 1], [0, 0]] })
+      .expect(201);
+
+    const modelId = createRes.body.modello.id;
+
+    const execRes = await global.request
+      .post(`/api/models/${modelId}/execute`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({ startX: 0, startY: 0, goalX: 1, goalY: 1 })
+      .expect(200);
+
+    expect(execRes.body).toHaveProperty('success', true);
+    expect(execRes.body).toHaveProperty('percorso');
+    expect(Array.isArray(execRes.body.percorso)).toBe(true);
   });
 });
 ```
@@ -1593,9 +1527,6 @@ describe('Model API Integration', () => {
 ```bash
 # Genera report coverage
 npm run test:coverage
-
-# Apri report HTML
-npm run test:coverage:open
 ```
 
 
@@ -1610,17 +1541,16 @@ npm run test:coverage:open
    ```
 
 **💻 Sviluppa e Testa**
-   ```bash
-   # Installa dipendenze
-   npm install
-   
-   # Avvia in modalità sviluppo
-   npm run dev
-   
-   # Esegui test
-   npm run test
-   npm run lint
-   ```
+```bash
+# Installa dipendenze
+npm install
+
+# Avvia in modalità sviluppo
+npm run dev
+
+# Esegui test
+npm run test
+```
 
 
 
@@ -1628,19 +1558,13 @@ npm run test:coverage:open
 
 ### 📏 **Standard di Codice**
 
-- **TypeScript**: Strict mode abilitato
-- **ESLint**: Configurazione Airbnb
-- **Prettier**: Formattazione automatica
-- **Husky**: Pre-commit hooks
-- **Conventional Commits**: Standard commit
+- **TypeScript**: presente; build con `npm run build`
+- **ESLint**: configurazione presente (`eslint.config.mjs`); nessuno script npm dedicato
+- **Prettier**: non configurato
+- **Husky**: non configurato
+- **Conventional Commits**: non formalizzato
 
-```bash
-# Verifica qualità codice
-npm run lint          # ESLint check
-npm run lint:fix      # Fix automatico
-npm run format        # Prettier format
-npm run type-check    # TypeScript check
-```
+> Nota: non sono presenti script npm per lint/format/type-check; è possibile aggiungerli secondo necessità.
 
 
 ---
