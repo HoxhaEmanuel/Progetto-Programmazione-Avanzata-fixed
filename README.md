@@ -268,56 +268,56 @@ classDiagram
 classDiagram
     %% === DAO CLASSES ===
     class UtenteDao {
-        +findById(id: number) Promise
-        +findByEmail(email: string) Promise
-        +create(userData: Optional<UtenteAttributes,'id'>) Promise
-        +updateTokens(userId: number, newTokenAmount: number) Promise
-        +findAllWithPagination(limit: number, offset: number) Promise
-        +deductTokensAndGetBalance(userId: number, amount: number) Promise
+        +findById() Promise
+        +findByEmail() Promise
+        +create() Promise
+        +updateTokens() Promise
+        +findAllWithPagination() Promise
+        +deductTokensAndGetBalance() Promise
         +getTotalTokensInSystem() Promise
         +count() Promise
     }
     
     class ModelloDao {
-        +findById(id: number) Promise
-        +create(modelData: Optional<ModelloAttributes,'id'>) Promise
-        +update(modelId: number, updateData: Partial<ModelloAttributes>) Promise
-        +updateGrid(modelId: number, newGrid: number[][]) Promise
-        +findByCreatorIdPaginated(creatorId: number, limit: number, offset: number) Promise
+        +findById() Promise
+        +create() Promise
+        +update() Promise
+        +updateGrid() Promise
+        +findByCreatorIdPaginated() Promise
         +count() Promise
-        +getModelStatusInfo(modelId: number) Promise
-        +isCreator(modelId: number, userId: number) Promise
-        +findMultipleByIds(modelIds: number[]) Promise
-        +checkMultipleOwnership(modelIds: number[], userId: number) Promise
-        +getGrid(modelId: number) Promise
+        +getModelStatusInfo() Promise
+        +isCreator() Promise
+        +findMultipleByIds() Promise
+        +checkMultipleOwnership() Promise
+        +getGrid() Promise
     }
     
     class RichiestaAggiornamentoDao {
-        +findById(id: number, transaction?: Transaction) Promise
-        +create(requestData: Optional<RichiestaAggiornamentoAttributes,'id'>, transaction?: Transaction) Promise
-        +update(requestId: number, updateData: Partial<RichiestaAggiornamentoAttributes>, transaction?: Transaction) Promise
-        +findMultipleByIdsWithRelations(ids: number[], transaction?: Transaction) Promise
-        +findPendingByCreatorIdPaginated(creatorId: number, limit: number, offset: number) Promise
-        +findByModelIdWithFiltersPaginated(modelId: number, filters: UpdateFilters, limit: number, offset: number) Promise
+        +findById() Promise
+        +create() Promise
+        +update() Promise
+        +findMultipleByIdsWithRelations() Promise
+        +findPendingByCreatorIdPaginated() Promise
+        +findByModelIdWithFiltersPaginated() Promise
         +getStats() Promise
-        +bulkUpdateStatus(updates: Array<{ requestId: number; status: 'approved' | 'rejected' }>, transaction?: Transaction) Promise
+        +bulkUpdateStatus() Promise
     }
 
     class CellaAggiornamentoDao {
-        +bulkCreate(cellsData: Optional<CellaAggiornamentoAttributes,'id'>[], transaction?: Transaction) Promise
+        +bulkCreate() Promise
     }
     
     %% === INTERFACES ===
     class TotalTokensResult {
         <<interface>>
-        +total_tokens: string | number | null
+        +total_tokens
     }
     
     class UpdateFilters {
         <<interface>>
-        +stato?: 'pending' | 'approved' | 'rejected'
-        +dataInizio?: Date
-        +dataFine?: Date
+        +stato
+        +dataInizio
+        +dataFine
     }
     
     %% === DEPENDENCIES ===
@@ -1441,11 +1441,11 @@ Authorization: Bearer <admin_token>
 Attualmente sono implementati test di integrazione sull’API con Jest e Supertest.
 
 ```mermaid
-graph TD
-    A[🧪 Testing] --> C[Integration Tests]
-    C --> C1[Database Schema (init.sql)]
-    C --> C2[API Endpoints]
-    C --> C3[Authentication & Tokens]
+graph TD;
+    A[Testing] --> C[Integration Tests];
+    C --> C1[DB Schema init.sql];
+    C --> C2[API Endpoints];
+    C --> C3[Authentication and Tokens];
 ```
 
 ### 🔬 **Struttura dei Test**
